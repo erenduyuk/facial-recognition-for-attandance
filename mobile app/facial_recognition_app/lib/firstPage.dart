@@ -1,12 +1,21 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:facial_recognition_app/yoklamaBaslatPage.dart';
 
 class firstPage extends StatelessWidget {
   const firstPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+
+                  List<Map<String, dynamic>> sampleStudentData = [
+  {'number': 1, 'name': 'Ahmet', 'surname': 'Yılmaz', 'checked': 1},
+  {'number': 2, 'name': 'Ayşe', 'surname': 'Kara', 'checked': 0},
+  {'number': 3, 'name': 'Mehmet', 'surname': 'Demir', 'checked': 1},
+  {'number': 4, 'name': 'Fatma', 'surname': 'Kaya', 'checked': 0},
+  // İstediğiniz kadar öğrenci ekleyebilirsiniz
+];
+
     return Scaffold(
         body: Column(
           children: [
@@ -30,7 +39,10 @@ class firstPage extends StatelessWidget {
                   primary: Colors.blue,
                 ),
                 onPressed: () {
-                  // Butona tıklandığında yapılacak işlemler buraya yazılabilir
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => yoklamaBaslatPage(studentData: sampleStudentData,)),
+                  );
                 },
                 child: Text('Yoklama Başlat',
                 style: TextStyle(color: Colors.white),),
