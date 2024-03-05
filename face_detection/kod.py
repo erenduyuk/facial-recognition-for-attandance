@@ -1,38 +1,10 @@
 import cv2
 import numpy as np
 import os
+from PIL import Image
 
-# Define the path to the dataset
-dataset_path = "./photos/"
-
-# Initialize lists to store training data and labels
-Training_Data = []
-Labels = []
-
-# Iterate through each folder (person) in the dataset
-for label, person_folder in enumerate(os.listdir(dataset_path)):
-    for image_file in os.listdir(os.path.join(dataset_path, person_folder)):
-        # Load the image
-        image_path = os.path.join(dataset_path, person_folder, image_file)
-        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-        # Append the image to training data and its corresponding label
-        image = cv2.resize(image, (600, 600))
-        print(image.shape)
-        print(label)
-        Training_Data.append(np.asarray(image, dtype=np.uint8))
-        Labels.append(label)
-
-print(Labels)
-# Convert lists to numpy arrays
-Labels = np.asarray(Labels, dtype=np.int32)
-
-# Create and train the face recognition model
-model = cv2.face.LBPHFaceRecognizer_create()
-#model = cv2.face.EigenFaceRecognizer_create()
-#model = cv2.face.FisherFaceRecognizer_create()
-model.train(np.asarray(Training_Data), np.asarray(Labels))
-print("Model Training Complete!!!!!")
-model.save("face_recognizer.xml")
+model = cv2.face_LBPHFaceRecognizer.create()
+model.read("face_recognizer.xml")
 
 # Load the trained model for face detection
 face_classifier = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
@@ -43,7 +15,7 @@ count_kadriye = 0
 def face_detector(img, size=0.75):
     count = 0
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = face_classifier.detectMultiScale(gray, 1.2, 10)
+    faces = face_classifier.detectMultiScale(gray, 1.2, 5)
     for (x, y, w, h) in faces:
         # Extract the region of interest (face) from the image
         roi = gray[y:y+h, x:x+w]
@@ -78,6 +50,7 @@ while True:
     if not ret:
         break
     frame = face_detector(frame)
+
     cv2.imshow("Face Recognition", frame)
     if cv2.waitKey(1) == ord('q'):  # If 'q' is pressed, exit the loop
         break
