@@ -2,16 +2,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:facial_recognition_app/student.dart';
 
-class yoklamaBaslatPage extends StatefulWidget {
+class StartAttendancePage extends StatefulWidget {
   final List<Map<String, dynamic>> studentData; // Veritabanından gelen öğrenci bilgileri
 
-  const yoklamaBaslatPage({Key? key, required this.studentData}) : super(key: key);
+  const StartAttendancePage({Key? key, required this.studentData}) : super(key: key);
 
   @override
   _TimerPageState createState() => _TimerPageState();
 }
 
-class _TimerPageState extends State<yoklamaBaslatPage> {
+class _TimerPageState extends State<StartAttendancePage> {
   late Timer _timer;
   int _secondsRemaining = 30 * 60; // 30 dakika, saniye cinsinden
   List<Student> students = [];

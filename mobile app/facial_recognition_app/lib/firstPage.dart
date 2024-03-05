@@ -1,6 +1,10 @@
+import 'dart:html';
 import 'dart:math';
+import 'package:facial_recognition_app/PreviousAttendancePage.dart';
 import 'package:flutter/material.dart';
-import 'package:facial_recognition_app/yoklamaBaslatPage.dart';
+import 'package:facial_recognition_app/StartAttendance.dart';
+import 'package:facial_recognition_app/attendance.dart';
+import 'package:facial_recognition_app/student.dart';
 
 class firstPage extends StatelessWidget {
   const firstPage({Key? key}) : super(key: key);
@@ -8,7 +12,7 @@ class firstPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-                  List<Map<String, dynamic>> sampleStudentData = [
+  List<Map<String, dynamic>> sampleStudentData = [
   {'number': 1, 'name': 'Ahmet', 'surname': 'Yılmaz', 'checked': 1},
   {'number': 2, 'name': 'Ayşe', 'surname': 'Kara', 'checked': 0},
   {'number': 3, 'name': 'Mehmet', 'surname': 'Demir', 'checked': 1},
@@ -16,6 +20,12 @@ class firstPage extends StatelessWidget {
   // İstediğiniz kadar öğrenci ekleyebilirsiniz
 ];
 
+List<Attendance> previousAttendances = [
+  Attendance(id: '1', createdAt: DateTime.now(), students: sampleStudentData),
+  Attendance(id: '2', createdAt: DateTime.now(), students: sampleStudentData),
+  Attendance(id: '3', createdAt: DateTime.now(), students: sampleStudentData),
+  // İstediğiniz kadar yoklama ekleyebilirsiniz
+];
     return Scaffold(
         body: Column(
           children: [
@@ -41,7 +51,7 @@ class firstPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => yoklamaBaslatPage(studentData: sampleStudentData,)),
+                    MaterialPageRoute(builder: (context) => StartAttendancePage(studentData: sampleStudentData,)),
                   );
                 },
                 child: Text('Yoklama Başlat',
@@ -58,7 +68,10 @@ class firstPage extends StatelessWidget {
                   primary: Colors.blue,
                 ),
                 onPressed: () {
-                  // Butona tıklandığında yapılacak işlemler buraya yazılabilir
+                   Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PreviousAttendancePage(previousAttendances: [],)),
+                  );
                 },
                 child: Text('Geçmiş Yoklamalar',
                     style: TextStyle(color: Colors.white),),
