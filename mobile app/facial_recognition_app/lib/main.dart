@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:facial_recognition_app/firstPage.dart';
+import 'package:facial_recognition_app/page/homePageForLecturer.dart';
 
 void main() {
   runApp(const MyApp());

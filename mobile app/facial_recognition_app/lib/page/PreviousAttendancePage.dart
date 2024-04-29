@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:facial_recognition_app/AttendanceDetailPage.dart';
-import 'package:facial_recognition_app/attendance.dart';
+import 'package:facial_recognition_app/page/AttendanceDetailPage.dart';
+import 'package:facial_recognition_app/model/Attendance.dart';
 
 class PreviousAttendancePage extends StatelessWidget {
   final List<Attendance> previousAttendances;

@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:facial_recognition_app/student.dart';
+import 'package:facial_recognition_app/model/Student.dart';
+import 'package:facial_recognition_app/DatabaseManager.dart';
 
 class StartAttendancePage extends StatefulWidget {
-  final List<Map<String, dynamic>> studentData; // Veritabanından gelen öğrenci bilgileri
 
-  const StartAttendancePage({Key? key, required this.studentData}) : super(key: key);
+  StartAttendancePage({Key? key}) : super(key: key);
 
   @override
   _TimerPageState createState() => _TimerPageState();
@@ -15,6 +15,7 @@ class _TimerPageState extends State<StartAttendancePage> {
   late Timer _timer;
   int _secondsRemaining = 30 * 60; // 30 dakika, saniye cinsinden
   List<Student> students = [];
+  Database database = Database();
 
   @override
   void initState() {
@@ -51,34 +52,14 @@ class _TimerPageState extends State<StartAttendancePage> {
   void _loadStudentsFromDatabase() {
     // Veritabanından öğrenci bilgilerini yükleyin ve Student nesnelerini oluşturun
     // Veritabanı işlemleri için uygun bir şekilde değiştirin
-    List<Map<String, dynamic>> databaseStudents = widget.studentData;
-    setState(() {
-      students = databaseStudents.map((data) {
-        return Student(
-          number: data['number'],
-          name: data['name'],
-          surname: data['surname'],
-          checked: data['checked'] == 1, // Veritabanından gelen değer 1 ise true, değilse false
-        );
-      }).toList();
-    });
   }
 
-  void _updateStudentData() {
-    // Veritabanından öğrenci bilgilerini güncelleyin ve setState'i çağırarak yeniden oluşturun
-    // Veritabanı işlemleri için uygun bir şekilde değiştirin
-    List<Map<String, dynamic>> databaseStudents = widget.studentData;//databaseden gelcek burası databaseden getiren bir fonksiyon yaz
-    setState(() {
-      students = databaseStudents.map((data) {
-        return Student(
-          number: data['number'],
-          name: data['name'],
-          surname: data['surname'],
-          checked: data['checked'] == 1,
-        );
-      }).toList();
-    });
-  }
+void _updateStudentData() {
+  // Veritabanından öğrenci bilgilerini güncelleyin ve setState'i çağırarak yeniden oluşturun
+  // Veritabanı işlemleri için uygun bir şekilde değiştirin
+  
+}
+
 
   @override
   Widget build(BuildContext context) {
