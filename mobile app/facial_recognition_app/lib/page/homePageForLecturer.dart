@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:facial_recognition_app/page/StartAttendance.dart';
 import 'package:facial_recognition_app/model/Attendance.dart';
 import 'package:facial_recognition_app/model/Student.dart';
+import 'package:facial_recognition_app/model/Lecturer.dart';
 
-class firstPage extends StatelessWidget {
-  const firstPage({Key? key}) : super(key: key);
-
+class homePageForLecturer extends StatelessWidget {
+  final Lecturer lecturer;
+  const homePageForLecturer({Key? key, required this.lecturer}) : super(key: key);
+  
   @override
   Widget build(BuildContext context) {
 
@@ -54,7 +56,7 @@ class firstPage extends StatelessWidget {
                 onPressed: () {
                    Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => PreviousAttendancePage(previousAttendances: [],)),
+                    MaterialPageRoute(builder: (context) => PreviousAttendancePage(lecturer: lecturer,)),
                   );
                 },
                 child: Text('Geçmiş Yoklamalar',
