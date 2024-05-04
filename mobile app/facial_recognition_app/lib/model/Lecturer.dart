@@ -1,7 +1,8 @@
 import 'package:facial_recognition_app/model/user.dart';
+import 'package:facial_recognition_app/model/lecture.dart';
 
 class Lecturer extends User {
-  
+  List<Lecture> previousLectures = [];
 
   Lecturer({
     required String userId,

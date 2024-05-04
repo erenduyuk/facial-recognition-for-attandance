@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:facial_recognition_app/model/Attendance.dart';
 import 'package:flutter/material.dart';
 import 'package:facial_recognition_app/model/Student.dart';
 import 'package:facial_recognition_app/DatabaseManager.dart';
@@ -14,7 +15,7 @@ class StartAttendancePage extends StatefulWidget {
 class _TimerPageState extends State<StartAttendancePage> {
   late Timer _timer;
   int _secondsRemaining = 30 * 60; // 30 dakika, saniye cinsinden
-  List<Student> students = [];
+  List<Attendance> attendances = [];
   Database database = Database();
 
   @override
@@ -91,13 +92,13 @@ void _updateStudentData() {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: students.length,
+              itemCount: attendances.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  leading: Text(students[index].number.toString()),
-                  title: Text('${students[index].name} ${students[index].surname}'),
+                  leading: Text(attendances[index].student.userId.toString()),
+                  title: Text('${attendances[index].student.username} ${attendances[index].student.username}'),
                   trailing: Checkbox(
-                    value: students[index].checked,
+                    value: attendances[index].isAttend,
                     onChanged: null, // Checkbox'ın etkinliği devre dışı bırakıldı
                   ),
                 );

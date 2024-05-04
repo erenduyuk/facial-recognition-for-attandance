@@ -1,3 +1,4 @@
+import 'package:facial_recognition_app/page/LoginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:facial_recognition_app/page/homePageForLecturer.dart';
 
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const firstPage(),
+      home: LoginPage(),
     );
   }
 }

@@ -1,5 +1,7 @@
+import 'package:facial_recognition_app/model/Lecturer.dart';
 import 'package:flutter/material.dart';
 import 'package:facial_recognition_app/model/user.dart';
+import 'package:facial_recognition_app/page/homePageForLecturer.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -10,18 +12,20 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _login() {
-    String username = _usernameController.text;
+  Future<bool> _login() async {
+    String userID = _usernameController.text;
     String password = _passwordController.text;
 
-    User user = getUserFromDatabase(username, password); // Kullanıcıyı veritabanından al
-    if (user != null) {
-      // Kullanıcı başarılı bir şekilde giriş yaptıysa
-      user.login(); // Giriş işlemini gerçekleştir
-      // Burada ana sayfaya yönlendirme veya başka bir işlem yapılabilir
-    } else {
-      // Kullanıcı adı veya şifre yanlışsa
-      showDialog(
+    User user = User(userId: userID, username: userID, userPassword: password);
+    
+    try {
+      bool response = await user.login();
+      if(response) {
+        // Kullanıcı başarılı bir şekilde giriş yaptıysa
+       return true;
+      } else {
+        // Kullanıcı adı veya şifre yanlışsa
+        showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: Text('Hata'),
@@ -36,7 +40,26 @@ class _LoginPageState extends State<LoginPage> {
           ],
         ),
       );
+      return false;
+      }
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Hata'),
+          content: Text('Bir hata oluştu: $e'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Tamam'),
+            ),
+          ],
+        ),
+      );
     }
+  return false;
   }
 
   @override
@@ -66,7 +89,15 @@ class _LoginPageState extends State<LoginPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _login,
+              onPressed: () async {
+                bool response = await _login();
+                if(response) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => homePageForLecturer(lecturer: Lecturer(userId: _usernameController.text, username: _usernameController.text, userPassword: _passwordController.text))),
+                  );
+                }
+              },
               child: Text('Giriş Yap'),
             ),
           ],
