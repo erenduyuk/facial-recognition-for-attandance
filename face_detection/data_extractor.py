@@ -13,13 +13,13 @@ while(True):
         #incrementing sample number
         sampleNum=sampleNum+1
         #saving the captured face in the dataset folder
-        cv2.imwrite(f"./photos/kadriyePerson/kadriyeee{sampleNum}.jpg", gray[y:y+h,x:x+w])
-    cv2.imshow('frame',img)
+        cv2.imwrite(f"./photos/ufukPerso/ufukPerso{sampleNum}.jpg", gray[y:y+h,x:x+w])
+        cv2.imshow('frame',img)
         #wait for 100 miliseconds
     if cv2.waitKey(100) & 0xFF == ord('q'):
         break
         # break if the sample number is morethan 20
-    elif sampleNum>200:
+    elif sampleNum>=400:
         break
 
 cam.release()

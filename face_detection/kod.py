@@ -41,15 +41,15 @@ def face_detector(img, size=0.75):
             label_text = f"Person {label}"  # Assuming each label corresponds to a person
             if label == 1:
                 count_ufuk += 1
-                label_text += ": Ufuk"
+                label_text += ": Tolga"
             else:
                 count_tolga += 1
-                label_text += ": Tolga"
+                label_text += ": Ufuk"
             cv2.putText(img, label_text, (x, y-20), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             cv2.putText(img, f"Confidence: {round(confidence, 2)}", (x, y-50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             confidences.append(confidence)
             # Insert the log into the database
-            if confidence < 50:
+            if confidence < 30:
                 c.execute("INSERT INTO face_logs (name, confidence) VALUES (?, ?)", (label_text, confidence))
             conn.commit()
         else:
@@ -80,9 +80,9 @@ while True:
         print(f"Avg confidence: {sum(confidences)/len(confidences)}")
         print(f"Max confidence: {max(confidences)}")
         if count_tolga > count_ufuk:
-            print("Sen Tolga'sın")
-        else:   
             print("Sen Ufuk'sun")
+        else:   
+            print("Sen Tolga'sın")
         count_tolga = 0
         count_ufuk = 0
 
