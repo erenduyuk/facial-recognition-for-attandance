@@ -44,12 +44,17 @@ async def check_login(userID: str, userPassword: str):
     
     try:
         with conn.cursor() as cursor:
-            query = sql.SQL("SELECT * FROM Users WHERE userID = %s AND userPassword = %s")
+            query = sql.SQL("SELECT * FROM users WHERE userid = %s AND userpassword = %s")
             cursor.execute(query, (userID, userPassword))
             user_record = cursor.fetchone()
         
         if user_record:
-            return {"status": "success", "message": "Giriş başarılı"}
+            if userID.startswith('a'):
+                return {"status": "success", "message": "Lecturer giriş başarılı"}
+            elif userID.startswith('o'):
+                return {"status": "success", "message": "Student giriş başarılı"}
+            else:
+                return {"status": "success", "message": "Giriş başarılı"}
         else:
             return {"status": "fail", "message": "Kullanıcı adı veya şifre yanlış"}
     except Exception as e:
@@ -68,7 +73,7 @@ async def get_current_attendance(lecture_id: int):
     
     try:
         with conn.cursor() as cursor:
-            query = sql.SQL("SELECT * FROM Attendance WHERE lectureID = %s")
+            query = sql.SQL("SELECT * FROM attendance WHERE lectureid = %s")
             cursor.execute(query, (lecture_id,))
             attendance_records = cursor.fetchall()
         
@@ -93,10 +98,10 @@ async def get_previous_lectures(user_id: str):
     try:
         with conn.cursor() as cursor:
             query = sql.SQL("""
-                SELECT Lecture.lectureID, Lecture.date 
-                FROM Lecture 
-                JOIN Lecturer ON Lecture.lectureID = Lecturer.lectureID 
-                WHERE Lecturer.userID = %s
+                SELECT lecture.lectureid, lecture.date 
+                FROM lecture 
+                JOIN lecturer ON lecture.lecturerid = lecturer.lecturerid 
+                WHERE lecturer.lecturerid = %s
             """)
             cursor.execute(query, (user_id,))
             lectures = cursor.fetchall()
@@ -133,7 +138,7 @@ async def get_attendances(student_id: str):
     
     try:
         with conn.cursor() as cursor:
-            query = sql.SQL("SELECT * FROM Attendance WHERE studentID = %s")
+            query = sql.SQL("SELECT * FROM attendance WHERE studentid = %s")
             cursor.execute(query, (student_id,))
             attendances = cursor.fetchall()
         
