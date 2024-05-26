@@ -29,6 +29,12 @@ class User(BaseModel):
 class Lecture(BaseModel):
     lectureID: str
     date: str
+    
+class CreateLecture(BaseModel):
+    lectureid: str
+    date: str
+    lecturerid: str
+    lecturename: str = None
 
 class Attendance(BaseModel):
     studentID: str
@@ -226,6 +232,27 @@ async def get_attendance_by_student_and_lecture(student_id: str, lecture_name: s
             return {"status": "fail", "message": "Yoklamalar bulunamadı"}
     except Exception as e:
         print(f"Error during attendance retrieval: {e}")
+        raise HTTPException(status_code=500, detail="Sunucu hatası")
+    finally:
+        conn.close()
+
+@app.post("/createLecture")
+async def create_lecture(lecture: CreateLecture):
+    try:
+        conn = get_db_connection()
+    except Exception as e:
+        print(f"Database connection error: {e}")
+        raise HTTPException(status_code=500, detail="Veritabanı bağlantı hatası")
+    
+    try:
+        with conn.cursor() as cursor:
+            query = sql.SQL("INSERT INTO lecture (lectureid, date, lecturerid, lecturename) VALUES (%s, %s, %s, %s)")
+            cursor.execute(query, (lecture.lectureid, lecture.date, lecture.lecturerid, lecture.lecturename))
+            conn.commit()
+        
+        return {"status": "success", "message": "Ders oluşturuldu"}
+    except Exception as e:
+        print(f"Error during lecture creation: {e}")
         raise HTTPException(status_code=500, detail="Sunucu hatası")
     finally:
         conn.close()

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:facial_recognition_app/model/Lecture.dart';
 import 'package:flutter/material.dart';
 import 'package:facial_recognition_app/model/Attendance.dart';
 import 'package:facial_recognition_app/DatabaseManager.dart';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 class StartAttendancePage extends StatefulWidget {
   final String lecturerId;
@@ -15,18 +17,20 @@ class StartAttendancePage extends StatefulWidget {
 }
 
 class _StartAttendancePageState extends State<StartAttendancePage> {
-  String baseIP = "https://d855-95-70-206-22.ngrok-free.app";
+  String baseIP = "https://f31a-95-70-206-22.ngrok-free.app";
   late Timer _timer;
-  int _secondsRemaining = 30 * 60; // 30 dakika, saniye cinsinden
+  int _secondsRemaining = 30 * 60; // 30 minutes in seconds
   late Future<List<Attendance>> _attendanceDetails;
   List<String> _lectures = [];
   String? _selectedLecture;
+  bool _isLoadingLectures = true; // New loading state
+  Uuid uuid = Uuid();
 
   @override
   void initState() {
     super.initState();
     _fetchLectures();
-    _attendanceDetails = Future.value([]); // Başlangıçta boş bir liste
+    _attendanceDetails = Future.value([]); // Initially an empty list
   }
 
   Future<void> _fetchLectures() async {
@@ -37,37 +41,43 @@ class _StartAttendancePageState extends State<StartAttendancePage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        print('Fetched data: $data'); // Debugging line
         if (data['status'] == 'success') {
-          final List<String> lectures = List<String>.from(data['lectures'].map((lecture) => lecture['lecturename']));
-          if (lectures.isNotEmpty) {
-            setState(() {
-              _lectures = lectures;
-              _selectedLecture = _lectures[0];
+          final List<String> lectures = List<String>.from(
+            data['lectures'].map((lecture) => lecture[2]), // Adjusted to handle list of lists
+          );
+          setState(() {
+            _lectures = lectures;
+            _selectedLecture = lectures.isNotEmpty ? lectures[0] : null;
+            _isLoadingLectures = false; // Stop loading
+            if (_selectedLecture != null) {
               _fetchAttendanceForSelectedLecture();
-            });
-          } else {
-            // Dersler boşsa hata mesajını göster
-            print('Dersler boş');
-          }
+            }
+          });
         } else {
-          print('Dersler bulunamadı');
+          setState(() {
+            _isLoadingLectures = false; // Stop loading
+          });
+          print('Lectures not found');
         }
       } else {
         throw Exception('Failed to load lectures');
       }
     } catch (e) {
+      setState(() {
+        _isLoadingLectures = false; // Stop loading in case of error
+      });
       print('Error fetching lectures: $e');
     }
   }
 
-      
-
   Future<void> _fetchAttendanceForSelectedLecture() async {
     if (_selectedLecture != null) {
       try {
-        final attendance = await Database().fetchAttendanceForLecture(_selectedLecture!);
+        final attendance = await Database().fetchAttendanceForLecture(uuid.toString());
         setState(() {
           _attendanceDetails = Future.value(attendance);
+          print('Fetched attendance: $attendance'); // Debugging line
         });
       } catch (e) {
         print('Error fetching attendance: $e');
@@ -82,7 +92,7 @@ class _StartAttendancePageState extends State<StartAttendancePage> {
           _secondsRemaining--;
         } else {
           _timer.cancel();
-          // Süre bittiğinde yapılacak işlemler buraya eklenebilir
+          // Actions to be taken when the timer ends can be added here
         }
       });
     });
@@ -99,83 +109,104 @@ class _StartAttendancePageState extends State<StartAttendancePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Attendance Page'),
-      ),
-      body: _lectures.isEmpty
-          ? Center(child: CircularProgressIndicator())
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Kalan Süre: ${_formatDuration(_secondsRemaining)}',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: _fetchAttendanceForSelectedLecture,
-                        icon: Icon(Icons.refresh),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: DropdownButton<String>(
-                    value: _selectedLecture,
-                    hint: Text('Ders Seçin'),
-                    items: _lectures.map((String lecture) {
-                      return DropdownMenuItem<String>(
-                        value: lecture,
-                        child: Text(lecture),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedLecture = newValue;
-                        _fetchAttendanceForSelectedLecture();
-                      });
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: FutureBuilder<List<Attendance>>(
-                    future: _attendanceDetails,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(child: Text('Attendance not found'));
-                      } else {
-                        List<Attendance> attendances = snapshot.data!;
-                        return ListView.builder(
-                          itemCount: attendances.length,
-                          itemBuilder: (context, index) {
-                            Attendance attendance = attendances[index];
-                            return ListTile(
-                              leading: Text(attendance.studentID),
-                              title: Text('${attendance.studentID} ${attendance.studentID}'),
-                              trailing: Checkbox(
-                                value: attendance.isAttend,
-                                onChanged: null, // Checkbox'ın etkinliği devre dışı bırakıldı
-                              ),
-                            );
-                          },
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ],
+  appBar: AppBar(
+    title: Text('Attendance Page'),
+  ),
+  body: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Remaining Time: ${_formatDuration(_secondsRemaining)}',
+                style: TextStyle(fontSize: 20),
+              ),
             ),
-    );
+            IconButton(
+              onPressed: _fetchAttendanceForSelectedLecture,
+              icon: Icon(Icons.refresh),
+            ),
+          ],
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: DropdownButton<String>(
+          value: _selectedLecture,
+          hint: Text('Select Lecture'),
+          items: _lectures.map((String lecture) {
+            return DropdownMenuItem<String>(
+              value: lecture,
+              child: Text(lecture),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            setState(() {
+              _selectedLecture = newValue;
+              _fetchAttendanceForSelectedLecture();
+            });
+          },
+        ),
+      ),
+      Expanded(
+        child: FutureBuilder<List<Attendance>>(
+          future: _attendanceDetails,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('Attendance not found'));
+            } else {
+              List<Attendance> attendances = snapshot.data!;
+              return ListView.builder(
+                itemCount: attendances.length,
+                itemBuilder: (context, index) {
+                  Attendance attendance = attendances[index];
+                  return ListTile(
+                    leading: Text(attendance.studentID),
+                    title: Text('${attendance.studentID} ${attendance.lectureName}'),
+                    trailing: Checkbox(
+                      value: attendance.isAttend,
+                      onChanged: null,
+                    ),
+                  );
+                },
+              );
+            }
+          },
+        ),
+      ),
+      SizedBox(height: 16), // Boşluk ekleyerek butonları biraz yukarı çekiyoruz
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              _startTimer();
+              Lecture lecture = Lecture(lectureID: uuid.toString(), date: "dateee", lecturerID: widget.lecturerId, lectureName: _selectedLecture!);
+              Database().addNewLectureToAPI(lecture);
+            },
+            child: Text('Start'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              _timer.cancel();
+              // Buraya stop işlemleri eklenebilir
+            },
+            child: Text('Stop'),
+          ),
+        ],
+      ),
+    ],
+  ),
+);
+
+
   }
 
   @override

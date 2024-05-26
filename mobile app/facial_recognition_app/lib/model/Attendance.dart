@@ -16,14 +16,13 @@ class Attendance {
     required this.lectureName,
   });
 
- factory Attendance.fromJson(List<dynamic> json) {
-  return Attendance(
-    studentID: json[1],
-    lectureID: json[2], // ders kimliği
-    time: json[3], // zaman
-    isAttend: json[4],
-    lectureName: json[5], // katılım durumu
-  );
-}
-
+  factory Attendance.fromJson(List<dynamic> json) {
+    return Attendance(
+      studentID: json[0],
+      lectureID: json[2],
+      time: json[3],
+      isAttend: json[4],
+      lectureName: json[5],
+    );
+  }
 }

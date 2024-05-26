@@ -9,7 +9,7 @@ class Database {
   factory Database() => _instance;
   Database._internal();
 
-  String baseIP = "https://d855-95-70-206-22.ngrok-free.app";
+  String baseIP = "https://f31a-95-70-206-22.ngrok-free.app";
 
   Future<List<Attendance>> fetchAllAttendanceForStudent(
       String studentId) async {
@@ -80,4 +80,28 @@ class Database {
       throw Exception('Failed to load attendance records');
     }
   }
+
+  Future<void> addNewLectureToAPI(Lecture lecture) async {
+  try {
+    final response = await http.post(
+      Uri.parse('$baseIP/createLecture'),
+      body: json.encode({
+        'lectureid': lecture.lectureID,
+        'date': lecture.date,
+        'lecturerID': lecture.lecturerID,
+        'lecturename': lecture.lectureName,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      print('New lecture created successfully');
+    } else {
+      print('Failed to create new lecture');
+    }
+  } catch (e) {
+    print('Error creating new lecture: $e');
+  }
+}
+
 }
