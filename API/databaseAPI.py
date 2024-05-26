@@ -3,6 +3,11 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
 from psycopg2 import sql
+from pyngrok import ngrok
+import nest_asyncio
+import uvicorn
+
+
 
 app = FastAPI()
 
@@ -22,12 +27,12 @@ class User(BaseModel):
     userPassword: str
 
 class Lecture(BaseModel):
-    lectureID: int
+    lectureID: str
     date: str
 
 class Attendance(BaseModel):
     studentID: str
-    lectureID: int
+    lectureID: str
     time: str
     isHere: bool
 
@@ -50,9 +55,9 @@ async def check_login(userID: str, userPassword: str):
         
         if user_record:
             if userID.startswith('a'):
-                return {"status": "success", "message": "Lecturer giriş başarılı"}
+                return {"status": "success", "message": "Lecturer"}
             elif userID.startswith('o'):
-                return {"status": "success", "message": "Student giriş başarılı"}
+                return {"status": "success", "message": "Student"}
             else:
                 return {"status": "success", "message": "Giriş başarılı"}
         else:
@@ -64,7 +69,7 @@ async def check_login(userID: str, userPassword: str):
         conn.close()
 
 @app.get("/getCurrentAttendance/{lecture_id}")
-async def get_current_attendance(lecture_id: int):
+async def get_current_attendance(lecture_id: str):
     try:
         conn = get_db_connection()
     except Exception as e:
@@ -151,3 +156,8 @@ async def get_attendances(student_id: str):
         raise HTTPException(status_code=500, detail="Sunucu hatası")
     finally:
         conn.close()
+
+ngrok_tunnel = ngrok.connect(8000)
+print("Public URL:", ngrok_tunnel.public_url)
+nest_asyncio.apply()
+uvicorn.run(app, port=8000)
