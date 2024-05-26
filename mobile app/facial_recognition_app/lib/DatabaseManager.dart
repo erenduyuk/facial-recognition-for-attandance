@@ -8,7 +8,7 @@ class Database {
   factory Database() => _instance;
   Database._internal();
 
-  String baseIP = "https://6e0d-95-70-206-22.ngrok-free.app";
+  String baseIP = "https://d855-95-70-206-22.ngrok-free.app";
 
   Future<List<Attendance>> fetchAllAttendanceForStudent(String studentId) async {
     

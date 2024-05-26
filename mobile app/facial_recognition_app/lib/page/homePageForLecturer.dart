@@ -37,7 +37,7 @@ class homePageForLecturer extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => StartAttendancePage()),
+                    MaterialPageRoute(builder: (context) => StartAttendancePage(lecturerId: lecturer.lecturerID,)),
                   );
                 },
                 child: Text('Yoklama Başlat',
