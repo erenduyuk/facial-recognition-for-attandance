@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:facial_recognition_app/model/Student.dart';
-import 'package:facial_recognition_app/model/Attendance.dart';
+import 'package:facial_recognition_app/model/Lecturelist.dart';
 import 'package:facial_recognition_app/DatabaseManager.dart';
+import 'package:facial_recognition_app/page/StudentAttendanceDetail.dart'; // Update with your correct import path
 
 class HomePageForStudent extends StatefulWidget {
   final Student student;
@@ -13,12 +14,12 @@ class HomePageForStudent extends StatefulWidget {
 }
 
 class _HomePageForStudentState extends State<HomePageForStudent> {
-  late Future<List<Attendance>> _attendances;
+  late Future<List<Lecturelist>> _lectures;
 
   @override
   void initState() {
     super.initState();
-    _attendances = Database().fetchAllAttendanceForStudent(widget.student.userId);
+    _lectures = Database().fetchLecturesByStudent(widget.student.userId);
   }
 
   @override
@@ -27,26 +28,33 @@ class _HomePageForStudentState extends State<HomePageForStudent> {
       appBar: AppBar(
         title: Text('Student Home Page'),
       ),
-      body: FutureBuilder<List<Attendance>>(
-        future: _attendances,
+      body: FutureBuilder<List<Lecturelist>>(
+        future: _lectures,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No attendances found'));
+            return Center(child: Text('No lectures found'));
           } else {
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                Attendance attendance = snapshot.data![index];
+                Lecturelist lecture = snapshot.data![index];
                 return ListTile(
-                  title: Text('Lecture: ${attendance.lectureID}'),
-                  subtitle: Text('Time: ${attendance.time}'),
-                  trailing: attendance.isAttend
-                      ? Icon(Icons.check_circle, color: Colors.green)
-                      : Icon(Icons.cancel, color: Colors.red),
+                  title: Text('Lecture: ${lecture.lectureName}'),
+                  subtitle: Text('StudentID: ${lecture.studentID}'),
+                  trailing: Icon(Icons.class_, color: Colors.blue),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            StudentAttendanceDetail(lecture: lecture),
+                      ),
+                    );
+                  },
                 );
               },
             );
