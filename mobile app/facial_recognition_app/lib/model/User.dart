@@ -9,17 +9,18 @@ class User {
 
   User({required this.userId, required this.username, required this.userPassword});
 
-  Future<bool> login() async {
+  Future<String> login() async {
+    String baseIP = "https://6e0d-95-70-206-22.ngrok-free.app";
     // API üzerinden giriş işlemini gerçekleştirme
-    final response = await http.get(Uri.parse('http://your-api-url/checkLogin?userID=$userId&password=$userPassword'));
+    final response = await http.get(Uri.parse('$baseIP/checkLogin?userID=$userId&userPassword=$userPassword'));
 
     if (response.statusCode == 200) {
       // API'den başarılı bir yanıt alındıysa
       final responseData = json.decode(response.body);
       if (responseData['status'] == 'success') {
-        return true; // Giriş başarılı
+        return responseData['message']; // Kullanıcı türünü döndür
       } else {
-        return false; // Giriş başarısız
+        return 'failed'; // Giriş başarısız
       }
     } else {
       // API çağrısında bir hata oluştuysa
@@ -31,3 +32,4 @@ class User {
     // Çıkış işlemleri burada yapılacak
   }
 }
+

@@ -1,32 +1,28 @@
-import 'package:facial_recognition_app/model/user.dart';
-import 'package:facial_recognition_app/model/lecture.dart';
+import 'package:facial_recognition_app/model/Lecture.dart';
 
-class Lecturer extends User {
-  List<Lecture> previousLectures = [];
+class Lecturer {
+  final String id;
+  final String name;
+  final List<Lecture> previousLectures;
+  final String password; // Eğer gerekli ise
 
   Lecturer({
-    required String userId,
-    required String username,
-    required String userPassword,
-  }) : super(userId: userId, username: username, userPassword: userPassword);
+    required this.id,
+    required this.name,
+    required this.previousLectures,
+    required this.password, // Eğer gerekli ise
+  });
 
-  void previousLecture() {
-    // Önceki ders bilgilerini getirme işlemleri burada yapılacak
+  factory Lecturer.fromJson(Map<String, dynamic> json) {
+    return Lecturer(
+      id: json['id'],
+      name: json['name'],
+      previousLectures: (json['previousLectures'] as List<dynamic>)
+          .map((lecture) => Lecture.fromJson(lecture))
+          .toList(),
+      password: json['password'], // Eğer gerekli ise
+    );
   }
 
-  void startAttendance() {
-    // Yoklama başlatma işlemleri burada yapılacak
-  }
-
-  void listCurrentAttendance() {
-    // Mevcut yoklamaları listeleme işlemleri burada yapılacak
-  }
-
-  void listPreviousAttendance() {
-    // Önceki yoklamaları listeleme işlemleri burada yapılacak
-  }
-
-  void stopAttendance() {
-    // Yoklamayı sonlandırma işlemleri burada yapılacak
-  }
+  String get lecturerID => this.id;
 }
