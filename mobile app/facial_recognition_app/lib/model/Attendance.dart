@@ -18,7 +18,7 @@ class Attendance {
 
   factory Attendance.fromJson(List<dynamic> json) {
     return Attendance(
-      studentID: json[0],
+      studentID: json[1],
       lectureID: json[2],
       time: json[3],
       isAttend: json[4],

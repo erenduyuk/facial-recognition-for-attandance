@@ -236,8 +236,8 @@ async def get_attendance_by_student_and_lecture(student_id: str, lecture_name: s
     finally:
         conn.close()
 
-@app.post("/createLecture")
-async def create_lecture(lecture: CreateLecture):
+@app.get("/createLecture/")
+async def create_lecture(lectureid: str, date: str, lecturerid: str, lecturename: str):
     try:
         conn = get_db_connection()
     except Exception as e:
@@ -247,7 +247,7 @@ async def create_lecture(lecture: CreateLecture):
     try:
         with conn.cursor() as cursor:
             query = sql.SQL("INSERT INTO lecture (lectureid, date, lecturerid, lecturename) VALUES (%s, %s, %s, %s)")
-            cursor.execute(query, (lecture.lectureid, lecture.date, lecture.lecturerid, lecture.lecturename))
+            cursor.execute(query, (lectureid, date, lecturerid, lecturename))
             conn.commit()
         
         return {"status": "success", "message": "Ders oluşturuldu"}

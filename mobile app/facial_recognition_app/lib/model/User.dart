@@ -10,7 +10,7 @@ class User {
   User({required this.userId, required this.username, required this.userPassword});
 
   Future<String> login() async {
-    String baseIP = "https://f31a-95-70-206-22.ngrok-free.app";
+    String baseIP = "https://0ec5-95-70-206-22.ngrok-free.app";
     // API üzerinden giriş işlemini gerçekleştirme
     final response = await http.get(Uri.parse('$baseIP/checkLogin?userID=$userId&userPassword=$userPassword'));
 

@@ -17,14 +17,14 @@ class StartAttendancePage extends StatefulWidget {
 }
 
 class _StartAttendancePageState extends State<StartAttendancePage> {
-  String baseIP = "https://f31a-95-70-206-22.ngrok-free.app";
+  String baseIP = "https://0ec5-95-70-206-22.ngrok-free.app";
   late Timer _timer;
   int _secondsRemaining = 30 * 60; // 30 minutes in seconds
   late Future<List<Attendance>> _attendanceDetails;
   List<String> _lectures = [];
   String? _selectedLecture;
   bool _isLoadingLectures = true; // New loading state
-  Uuid uuid = Uuid();
+  String uuid = Uuid().v4();
 
   @override
   void initState() {
@@ -168,7 +168,7 @@ class _StartAttendancePageState extends State<StartAttendancePage> {
                 itemBuilder: (context, index) {
                   Attendance attendance = attendances[index];
                   return ListTile(
-                    leading: Text(attendance.studentID),
+                    leading: Text(attendance.time),
                     title: Text('${attendance.studentID} ${attendance.lectureName}'),
                     trailing: Checkbox(
                       value: attendance.isAttend,
@@ -188,8 +188,9 @@ class _StartAttendancePageState extends State<StartAttendancePage> {
           ElevatedButton(
             onPressed: () {
               _startTimer();
-              Lecture lecture = Lecture(lectureID: uuid.toString(), date: "dateee", lecturerID: widget.lecturerId, lectureName: _selectedLecture!);
-              Database().addNewLectureToAPI(lecture);
+              
+              Lecture lecture = Lecture(lectureID: uuid, date: "dateee", lecturerID: widget.lecturerId, lectureName: _selectedLecture!);
+              Database().addNewLectureToAPI(lecture.lectureID, lecture.date, lecture.lecturerID, lecture.lectureName);
             },
             child: Text('Start'),
           ),

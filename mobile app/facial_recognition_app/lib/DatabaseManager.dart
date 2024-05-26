@@ -9,7 +9,7 @@ class Database {
   factory Database() => _instance;
   Database._internal();
 
-  String baseIP = "https://f31a-95-70-206-22.ngrok-free.app";
+  String baseIP = "https://0ec5-95-70-206-22.ngrok-free.app";
 
   Future<List<Attendance>> fetchAllAttendanceForStudent(
       String studentId) async {
@@ -81,17 +81,10 @@ class Database {
     }
   }
 
-  Future<void> addNewLectureToAPI(Lecture lecture) async {
+  Future<void> addNewLectureToAPI(String lectureid, String date, String lecturerid, String lecturename) async {
   try {
-    final response = await http.post(
-      Uri.parse('$baseIP/createLecture'),
-      body: json.encode({
-        'lectureid': lecture.lectureID,
-        'date': lecture.date,
-        'lecturerID': lecture.lecturerID,
-        'lecturename': lecture.lectureName,
-      }),
-      headers: {'Content-Type': 'application/json'},
+    final response = await http.get(
+      Uri.parse('$baseIP/createLecture?lectureid=$lectureid&date=$date&lecturerid=$lecturerid&lecturename=$lecturename'),
     );
 
     if (response.statusCode == 200) {
