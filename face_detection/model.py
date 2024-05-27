@@ -64,10 +64,10 @@ class FaceRecognizer:
                 print(f"Avg confidence: {sum(self.confidences)/len(self.confidences)}")
                 print(f"Max confidence: {max(self.confidences)}")
                 if self.count_tolga > self.count_ufuk:
-                    self.mark_attendance("o1", self.lectureID)
+                    #self.mark_attendance("o1", self.lectureID)
                     print("Sen Tolga'sın")
                 else:
-                    self.mark_attendance("o2", self.lectureID)
+                    #self.mark_attendance("o2", self.lectureID)
                     print("Sen Ufuk'sun")
                 self.confidences = []  # Reset confidence list for next interval
                 self.count_tolga = 0  # Reset counters for next interval
@@ -75,7 +75,7 @@ class FaceRecognizer:
 
         
     def mark_attendance(studentID: str, lectureID: str):
-        url = "http://localhost:8000/markAttendance"  # FastAPI sunucunuzun URL'si
+        url = "https://1c23-95-70-206-22.ngrok-free.app/markAttendance"  # FastAPI sunucunuzun URL'si
         params = {
             "studentID": studentID,
             "lectureID": lectureID

@@ -17,7 +17,7 @@ class StartAttendancePage extends StatefulWidget {
 }
 
 class _StartAttendancePageState extends State<StartAttendancePage> {
-  String baseIP = "https://0ec5-95-70-206-22.ngrok-free.app";
+  String baseIP = "https://1c23-95-70-206-22.ngrok-free.app";
   late Timer _timer;
   int _secondsRemaining = 30 * 60; // 30 minutes in seconds
   late Future<List<Attendance>> _attendanceDetails;
