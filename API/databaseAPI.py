@@ -1,5 +1,6 @@
 import psycopg2
-from fastapi import FastAPI, HTTPException
+import asyncio
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import List
 from psycopg2 import sql
@@ -8,14 +9,13 @@ import nest_asyncio
 import uvicorn
 import sys
 import os
+import subprocess
 
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'face_detection')))
-from model import FaceRecognizer 
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'face_detection')))
+# from model import FaceRecognizer 
 
-model = FaceRecognizer()
-model.start_recognition()
-
+script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "face_detection", "caller.py"))
 
 
 app = FastAPI()
@@ -245,8 +245,14 @@ async def get_attendance_by_student_and_lecture(student_id: str, lecture_name: s
     finally:
         conn.close()
 
-@app.get("/createLecture/")
+# async def start_face_recognition(lectureid):
+#     model = FaceRecognizer(lectureID=lectureid)
+#     model.start_recognition()
+
+@app.get("/createLecture")
 async def create_lecture(lectureid: str, date: str, lecturerid: str, lecturename: str):
+    
+    subprocess.Popen(["python3", script_path])
     try:
         conn = get_db_connection()
     except Exception as e:
@@ -258,9 +264,6 @@ async def create_lecture(lectureid: str, date: str, lecturerid: str, lecturename
             query = sql.SQL("INSERT INTO lecture (lectureid, date, lecturerid, lecturename) VALUES (%s, %s, %s, %s)")
             cursor.execute(query, (lectureid, date, lecturerid, lecturename))
             conn.commit()
-        
-        model = FaceRecognizer(lectureID=lectureid)
-        model.start_recognition()
         
         return {"status": "success", "message": "Ders oluşturuldu"}
     except Exception as e:
