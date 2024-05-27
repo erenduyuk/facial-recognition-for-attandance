@@ -3,13 +3,15 @@ import 'package:facial_recognition_app/model/Lecture.dart';
 import 'package:http/http.dart' as http;
 import 'package:facial_recognition_app/model/Attendance.dart';
 import 'package:facial_recognition_app/model/Lecturelist.dart';
+import '../base_ip.dart';
+
+BaseIp baseIp = new BaseIp();
+String baseIP = baseIp.base_ip;
 
 class Database {
   static final Database _instance = Database._internal();
   factory Database() => _instance;
   Database._internal();
-
-  String baseIP = "https://6dc9-95-70-206-22.ngrok-free.app";
 
   Future<List<Attendance>> fetchAllAttendanceForStudent(
       String studentId) async {
@@ -81,20 +83,48 @@ class Database {
     }
   }
 
-  Future<void> addNewLectureToAPI(String lectureid, String date, String lecturerid, String lecturename) async {
-  try {
-    final response = await http.get(
-      Uri.parse('$baseIP/createLecture?lectureid=$lectureid&date=$date&lecturerid=$lecturerid&lecturename=$lecturename'),
-    );
+  Future<void> addNewLectureToAPI(String lectureid, String date,
+      String lecturerid, String lecturename) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+            '$baseIP/createLecture?lectureid=$lectureid&date=$date&lecturerid=$lecturerid&lecturename=$lecturename'),
+      );
+
+      if (response.statusCode == 200) {
+        print('New lecture created successfully');
+      } else {
+        print('Failed to create new lecture');
+      }
+    } catch (e) {
+      print('Error creating new lecture: $e');
+    }
+  }
+
+  Future<List<Attendance>> fetchAttendanceByLecturerAndLecture(
+      String lecturerID, String lectureName) async {
+    final response = await http.get(Uri.parse(
+        '$baseIP/getAttendanceByLecturerAndLecture?lecture_id=$lecturerID&lecture_name=$lectureName'));
 
     if (response.statusCode == 200) {
-      print('New lecture created successfully');
+      final List<dynamic> attendanceJson =
+          json.decode(response.body)['attendance'];
+      return attendanceJson.map((json) => Attendance.fromJson(json)).toList();
     } else {
-      print('Failed to create new lecture');
+      throw Exception('Failed to load attendance records');
     }
-  } catch (e) {
-    print('Error creating new lecture: $e');
   }
-}
 
+  Future<List<Attendance>> fetchAttendanceByLecture(String lectureID) async {
+    final response =
+        await http.get(Uri.parse('$baseIP/getAttendanceByLecture/$lectureID'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> attendanceJson =
+          json.decode(response.body)['attendance'];
+      return attendanceJson.map((json) => Attendance.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load attendance records');
+    }
+  }
 }

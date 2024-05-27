@@ -83,7 +83,7 @@ class FaceRecognizer:
 
 
 def mark_attendance(studentID, lectureID):
-    url = "https://6dc9-95-70-206-22.ngrok-free.app/markAttendance"
+    url = "https://6c10-31-223-86-134.ngrok-free.app/markAttendance"
     params = {
         "studentID": studentID,
         "lectureID": lectureID
