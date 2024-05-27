@@ -17,6 +17,7 @@ import subprocess
 
 script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "face_detection", "caller.py"))
 
+idd = "idd"
 
 app = FastAPI()
 
@@ -252,7 +253,7 @@ async def get_attendance_by_student_and_lecture(student_id: str, lecture_name: s
 @app.get("/createLecture")
 async def create_lecture(lectureid: str, date: str, lecturerid: str, lecturename: str):
     
-    subprocess.Popen(["python3", script_path])
+    subprocess.Popen(["python3", script_path, lectureid])
     try:
         conn = get_db_connection()
     except Exception as e:
@@ -282,8 +283,8 @@ async def mark_attendance(studentID: str, lectureID: str):
     
     try:
         with conn.cursor() as cursor:
-            query = sql.SQL("UPDATE attendance SET time = %s, ishere = %s WHERE studentid = %s AND lectureid = %s")
-            cursor.execute(query, ("new_time_value", True, studentID, lectureID))
+            query = sql.SQL("UPDATE attendance SET ishere = %s WHERE studentid = %s AND lectureid = %s")
+            cursor.execute(query, (True, studentID, lectureID))
             conn.commit()
 
         
@@ -293,6 +294,10 @@ async def mark_attendance(studentID: str, lectureID: str):
         raise HTTPException(status_code=500, detail="Sunucu hatası")
     finally:
         conn.close()
+
+@app.get("/hello")
+async def hello():
+    return {"message": "Hello, world!"}
 
 
 ngrok_tunnel = ngrok.connect(8000)

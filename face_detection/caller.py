@@ -1,4 +1,7 @@
 from model import FaceRecognizer
+import sys
 
-face_recognizer = FaceRecognizer(lectureID="1")
+lectureid = sys.argv[1]
+
+face_recognizer = FaceRecognizer(lectureID=lectureid)
 face_recognizer.start_recognition()
