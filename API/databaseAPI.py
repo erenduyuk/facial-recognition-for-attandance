@@ -259,6 +259,9 @@ async def create_lecture(lectureid: str, date: str, lecturerid: str, lecturename
             cursor.execute(query, (lectureid, date, lecturerid, lecturename))
             conn.commit()
         
+        model = FaceRecognizer(lectureID=lectureid)
+        model.start_recognition()
+        
         return {"status": "success", "message": "Ders oluşturuldu"}
     except Exception as e:
         print(f"Error during lecture creation: {e}")
