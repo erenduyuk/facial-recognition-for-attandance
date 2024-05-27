@@ -2,11 +2,12 @@ import cv2
 import numpy as np
 import os
 import time
-import sqlite3
-
+import requests
 
 class FaceRecognizer:
-    def __init__(self):
+    def __init__(self, lectureID):
+
+        self.lectureID = lectureID
         self.model = cv2.face.LBPHFaceRecognizer_create()
         self.model.read("face_recognizer.xml")
 
@@ -42,6 +43,7 @@ class FaceRecognizer:
         return img
 
     def start_recognition(self):
+        global cam
         cam = cv2.VideoCapture(0)
         start_time = time.time()
         log_interval = 10  # in seconds
@@ -62,12 +64,36 @@ class FaceRecognizer:
                 print(f"Avg confidence: {sum(self.confidences)/len(self.confidences)}")
                 print(f"Max confidence: {max(self.confidences)}")
                 if self.count_tolga > self.count_ufuk:
-                    print("Sen Tolga'sun")
+                    self.mark_attendance("o1", self.lectureID)
+                    print("Sen Tolga'sın")
                 else:
-                    print("Sen Ufuk'sın")
+                    self.mark_attendance("o2", self.lectureID)
+                    print("Sen Ufuk'sun")
                 self.confidences = []  # Reset confidence list for next interval
                 self.count_tolga = 0  # Reset counters for next interval
                 self.count_ufuk = 0
 
+        
+    def mark_attendance(studentID: str, lectureID: str):
+        url = "http://localhost:8000/markAttendance"  # FastAPI sunucunuzun URL'si
+        params = {
+            "studentID": studentID,
+            "lectureID": lectureID
+        }
+        
+        try:
+            response = requests.get(url, params=params)
+            response.raise_for_status()  # HTTPError için kontrol
+            
+            data = response.json()
+            if data["status"] == "success":
+                print("Yoklama başarıyla işaretlendi")
+            else:
+                print("Yoklama işaretleme başarısız:", data["message"])
+        except requests.exceptions.RequestException as e:
+            print(f"HTTP isteği sırasında hata: {e}")
+
+    def stop_attendance(self):
+        global cam
         cam.release()
         cv2.destroyAllWindows()
