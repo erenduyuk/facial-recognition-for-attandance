@@ -6,6 +6,15 @@ from psycopg2 import sql
 from pyngrok import ngrok
 import nest_asyncio
 import uvicorn
+import sys
+import os
+
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'face_detection')))
+from model import FaceRecognizer 
+
+model = FaceRecognizer()
+model.start_recognition()
 
 
 
@@ -253,6 +262,28 @@ async def create_lecture(lectureid: str, date: str, lecturerid: str, lecturename
         return {"status": "success", "message": "Ders oluşturuldu"}
     except Exception as e:
         print(f"Error during lecture creation: {e}")
+        raise HTTPException(status_code=500, detail="Sunucu hatası")
+    finally:
+        conn.close()
+
+@app.get("/markAttendance")
+async def mark_attendance(studentID: str, lectureID: str):
+    try:
+        conn = get_db_connection()
+    except Exception as e:
+        print(f"Database connection error: {e}")
+        raise HTTPException(status_code=500, detail="Veritabanı bağlantı hatası")
+    
+    try:
+        with conn.cursor() as cursor:
+            query = sql.SQL("UPDATE attendance SET time = %s, ishere = %s WHERE studentid = %s AND lectureid = %s")
+            cursor.execute(query, ("new_time_value", True, studentID, lectureID))
+            conn.commit()
+
+        
+        return {"status": "success", "message": "Yoklama işaretlendi"}
+    except Exception as e:
+        print(f"Error during marking attendance: {e}")
         raise HTTPException(status_code=500, detail="Sunucu hatası")
     finally:
         conn.close()
