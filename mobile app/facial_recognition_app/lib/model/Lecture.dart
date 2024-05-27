@@ -19,7 +19,8 @@ class Lecture {
     return Lecture(
       lectureID: json[0], // Dizi içindeki ilk değer lectureID'yi temsil eder
       date: json[1],
-      lecturerID: json[2], // Dizi içindeki üçüncü değer lectureID'yi temsil eder
+      lecturerID:
+          json[2], // Dizi içindeki üçüncü değer lectureID'yi temsil eder
       lectureName: json[3], // Dizi içindeki ikinci değer tarihi temsil eder
     );
   }

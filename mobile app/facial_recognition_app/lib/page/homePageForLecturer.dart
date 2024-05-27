@@ -1,13 +1,12 @@
-import 'package:facial_recognition_app/page/PreviousAttendancePage.dart';
 import 'package:flutter/material.dart';
+import 'package:facial_recognition_app/page/PreviousAttendancePage.dart';
 import 'package:facial_recognition_app/page/StartAttendance.dart';
-import 'package:facial_recognition_app/model/Attendance.dart';
-import 'package:facial_recognition_app/model/Student.dart';
 import 'package:facial_recognition_app/model/Lecturer.dart';
+import 'package:facial_recognition_app/page/LoginPage.dart';
 
-class homePageForLecturer extends StatelessWidget {
+class HomePageForLecturer extends StatelessWidget {
   final Lecturer lecturer;
-  const homePageForLecturer({Key? key, required this.lecturer})
+  const HomePageForLecturer({Key? key, required this.lecturer})
       : super(key: key);
 
   @override
@@ -73,6 +72,29 @@ class homePageForLecturer extends StatelessWidget {
               ),
             ),
           ),
+          Spacer(),
+          // Log out butonu
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.47,
+            height: MediaQuery.of(context).size.height * 0.05,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  (Route<dynamic> route) => false,
+                );
+              },
+              child: Text(
+                'Çıkış Yap',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+          Padding(padding: EdgeInsets.only(bottom: 30.0)),
         ],
       ),
     );

@@ -1,13 +1,11 @@
-import psycopg2
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
 from psycopg2 import sql
+import psycopg2
+import uvicorn
 from pyngrok import ngrok
 import nest_asyncio
-import uvicorn
-
-
 
 app = FastAPI()
 
@@ -111,7 +109,6 @@ async def get_previous_lectures(user_id: str):
             query = sql.SQL("""
                 SELECT *
                 FROM lecture 
-                
                 WHERE lecturerid = %s
             """)
             cursor.execute(query, (user_id,))
@@ -127,16 +124,43 @@ async def get_previous_lectures(user_id: str):
     finally:
         conn.close()
 
-@app.post("/startRecognition")
+#PreviousAttendance page için
+@app.get("/getAttendanceByLecture/{lecture_id}")
+async def get_attendance_by_lecture(lecture_id: str):
+    try:
+        conn = get_db_connection()
+    except Exception as e:
+        print(f"Database connection error: {e}")
+        raise HTTPException(status_code=500, detail="Veritabanı bağlantı hatası")
+    
+    try:
+        with conn.cursor() as cursor:
+            query = sql.SQL("""
+                SELECT studentid, time, ishere
+                FROM attendance
+                WHERE lectureid = %s
+            """)
+            cursor.execute(query, (lecture_id,))
+            attendance_records = cursor.fetchall()
+        
+        if attendance_records:
+            return {"status": "success", "attendance": attendance_records}
+        else:
+            return {"status": "fail", "message": "Yoklamalar bulunamadı"}
+    except Exception as e:
+        print(f"Error during attendance retrieval: {e}")
+        raise HTTPException(status_code=500, detail="Sunucu hatası")
+    finally:
+        conn.close()
+
+
+
+@app.get("/startRecognition")
 async def start_recognition():
-    # Recognition başlatma işlemi burada gerçekleştirilecek
-    # Bu örnekte sadece başarılı bir dönüş sağlanıyor
     return {"status": "success", "message": "Yüz tanıma başlatıldı"}
 
-@app.post("/stopRecognition")
+@app.get("/stopRecognition")
 async def stop_recognition():
-    # Recognition durdurma işlemi burada gerçekleştirilecek
-    # Bu örnekte sadece başarılı bir dönüş sağlanıyor
     return {"status": "success", "message": "Yüz tanıma durduruldu"}
 
 @app.get("/getAttendances/{student_id}")
@@ -163,7 +187,6 @@ async def get_attendances(student_id: str):
     finally:
         conn.close()
 
-
 @app.get("/getLecturesByLecturer/{lecturer_id}")
 async def get_lectures_by_lecturer(lecturer_id: str):
     try:
@@ -174,12 +197,13 @@ async def get_lectures_by_lecturer(lecturer_id: str):
     
     try:
         with conn.cursor() as cursor:
-            query = sql.SQL("SELECT * FROM lecturelist WHERE lecturerid = %s")
+            query = sql.SQL("SELECT DISTINCT lecturename FROM lecture WHERE lecturerid = %s")
             cursor.execute(query, (lecturer_id,))
             lecture_records = cursor.fetchall()
         
         if lecture_records:
-            return {"status": "success", "lectures": lecture_records}
+            lectures = [{"lecturename": record[0]} for record in lecture_records]
+            return {"status": "success", "lectures": lectures}
         else:
             return {"status": "fail", "message": "Dersler bulunamadı"}
     except Exception as e:
