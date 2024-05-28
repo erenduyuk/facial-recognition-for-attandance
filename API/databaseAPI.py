@@ -307,7 +307,7 @@ async def get_attendance_by_student_and_lecture(student_id: str, lecture_name: s
 
 @app.get("/createLecture")
 async def create_lecture(lectureid: str, date: str, lecturerid: str, lecturename: str):
-    
+    global process
     if process is None:
         process = subprocess.Popen(["python3", script_path, lectureid])
         try:

@@ -28,6 +28,7 @@ class _StartAttendancePageState extends State<StartAttendancePage> {
   String? _selectedLecture;
   bool _isLoadingLectures = true; // New loading state
   String uuid = Uuid().v4();
+  bool _isTimerRunning = false; // To track the timer state
 
   @override
   void initState() {
@@ -193,24 +194,39 @@ class _StartAttendancePageState extends State<StartAttendancePage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
-                onPressed: () {
-                  _startTimer();
+                onPressed: _isTimerRunning
+                    ? null
+                    : () {
+                        _startTimer();
+                        setState(() {
+                          _isTimerRunning = true;
+                        });
 
-                  Lecture lecture = Lecture(
-                      lectureID: uuid,
-                      date: "dateee",
-                      lecturerID: widget.lecturerId,
-                      lectureName: _selectedLecture!);
-                  Database().addNewLectureToAPI(lecture.lectureID, lecture.date,
-                      lecture.lecturerID, lecture.lectureName);
-                },
+                        Lecture lecture = Lecture(
+                            lectureID: uuid,
+                            date: "dateee",
+                            lecturerID: widget.lecturerId,
+                            lectureName: _selectedLecture!);
+                        Database().addNewLectureToAPI(
+                            lecture.lectureID,
+                            lecture.date,
+                            lecture.lecturerID,
+                            lecture.lectureName);
+                      },
                 child: Text('Start'),
               ),
               ElevatedButton(
-                onPressed: () {
-                  _timer.cancel();
-                  Database().stopFaceRecognition();
-                },
+                onPressed: !_isTimerRunning
+                    ? null
+                    : () {
+                        uuid = Uuid().v4();
+                        _timer.cancel();
+                        _secondsRemaining = 30 * 60;
+                        Database().stopFaceRecognition();
+                        setState(() {
+                          _isTimerRunning = false;
+                        });
+                      },
                 child: Text('Stop'),
               ),
             ],
