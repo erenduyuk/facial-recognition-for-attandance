@@ -30,13 +30,13 @@ class _LoginPageState extends State<LoginPage> {
           context: context,
           builder: (context) => AlertDialog(
             title: Text('Hata'),
-            content: Text('Kullanıcı adı veya şifre yanlış.'),
+            content: Text('Invalid User Name or Password.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('Tamam'),
+                child: Text('Ok'),
               ),
             ],
           ),
@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Giriş Yap'),
+        title: Text('Login'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -89,14 +89,14 @@ class _LoginPageState extends State<LoginPage> {
             TextField(
               controller: _usernameController,
               decoration: InputDecoration(
-                labelText: 'Kullanıcı Adı',
+                labelText: 'User Name',
               ),
             ),
             SizedBox(height: 20),
             TextField(
               controller: _passwordController,
               decoration: InputDecoration(
-                labelText: 'Şifre',
+                labelText: 'Password',
               ),
               obscureText: true,
             ),
@@ -132,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
                   }
                 }
               },
-              child: Text('Giriş Yap'),
+              child: Text('Login'),
             ),
           ],
         ),

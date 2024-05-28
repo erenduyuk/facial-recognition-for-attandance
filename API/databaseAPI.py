@@ -189,7 +189,7 @@ async def get_attendance_by_lecturer_and_lecture(lecturer_id: str, lecture_name:
     
     try:
         with conn.cursor() as cursor:
-            query = sql.SQL("SELECT * FROM attendance WHERE lectureid = %s AND lecturename = %s")
+            query = sql.SQL("SELECT * FROM lecture WHERE lecturerid = %s AND lecturename = %s")
             cursor.execute(query, (lecturer_id, lecture_name))
             attendance_records = cursor.fetchall()
         

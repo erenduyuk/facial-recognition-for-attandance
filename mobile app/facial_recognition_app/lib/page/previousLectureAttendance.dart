@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:facial_recognition_app/model/Attendance.dart';
 import 'package:facial_recognition_app/DatabaseManager.dart';
+import 'package:facial_recognition_app/model/Lecture.dart';
+import 'package:facial_recognition_app/page/LectureDetailPage.dart';
 
 class PreviousLectureAttendance extends StatefulWidget {
   final String lectureName;
@@ -16,7 +18,7 @@ class PreviousLectureAttendance extends StatefulWidget {
 }
 
 class _PreviousLectureAttendanceState extends State<PreviousLectureAttendance> {
-  late Future<List<Attendance>> _attendances;
+  late Future<List<Lecture>> _attendances;
 
   @override
   void initState() {
@@ -29,9 +31,9 @@ class _PreviousLectureAttendanceState extends State<PreviousLectureAttendance> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.lectureName} Geçmiş Yoklamalar'),
+        title: Text('${widget.lectureName} Lectures'),
       ),
-      body: FutureBuilder<List<Attendance>>(
+      body: FutureBuilder<List<Lecture>>(
         future: _attendances,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -44,12 +46,19 @@ class _PreviousLectureAttendanceState extends State<PreviousLectureAttendance> {
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                Attendance attendance = snapshot.data![index];
+                Lecture attendance = snapshot.data![index];
                 return ListTile(
-                  title: Text('Attendance ID: ${attendance.attendanceid}'),
-                  subtitle: Text('Date: ${attendance.time}'),
+                  title: Text('Lecture ID: ${attendance.lectureID}'),
+                  subtitle: Text('Date: ${attendance.date}'),
                   onTap: () {
-                    // Attendance detayları için gerekli işlemler
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LectureDetailPage(
+                          lectureID: attendance.lectureID,
+                        ),
+                      ),
+                    );
                   },
                 );
               },
