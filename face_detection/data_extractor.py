@@ -13,7 +13,7 @@ while(True):
         #incrementing sample number
         sampleNum=sampleNum+1
         #saving the captured face in the dataset folder
-        cv2.imwrite(f"./photos/news/zzznews{sampleNum}.jpg", gray[y:y+h,x:x+w])
+        cv2.imwrite(f"./photos/zzznews/zzznews{sampleNum}.jpg", gray[y:y+h,x:x+w])
         cv2.imshow('frame',img)
         #wait for 100 miliseconds
     if cv2.waitKey(100) & 0xFF == ord('q'):
