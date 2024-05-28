@@ -1,8 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/face_detection.iml" filepath="$PROJECT_DIR$/.idea/face_detection.iml" />
-    </modules>
-  </component>
-</project>
+version https://git-lfs.github.com/spec/v1
+oid sha256:aac534bb1ad13bfed4bd2dfdfdd6e9f270a5e51d614a69fe0a43d3a08a399b20
+size 280
