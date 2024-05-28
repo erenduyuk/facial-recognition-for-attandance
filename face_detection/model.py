@@ -72,7 +72,7 @@ class FaceRecognizer:
                 if tgte and (not ugtt):
                     mark_attendance("o1", self.lectureID)
                     print("Sen Tolga'sın")
-                elif tgte and ugtt:
+                elif (not egtu) and ugtt:
                     mark_attendance("o2", self.lectureID)
                     print("Sen Ufuk'sun")
                 elif egtu and (not tgte):
@@ -94,7 +94,7 @@ class FaceRecognizer:
 
 def mark_attendance(studentID, lectureID):
 
-    url = "https://d3cc-193-255-169-24.ngrok-free.app/markAttendance"
+    url = "https://9b69-193-255-169-24.ngrok-free.app/markAttendance"
 
     params = {
         "studentID": studentID,
