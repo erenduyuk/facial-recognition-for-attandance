@@ -209,7 +209,7 @@ class _StartAttendancePageState extends State<StartAttendancePage> {
               ElevatedButton(
                 onPressed: () {
                   _timer.cancel();
-                  // Buraya stop işlemleri eklenebilir
+                  Database().stopFaceRecognition();
                 },
                 child: Text('Stop'),
               ),

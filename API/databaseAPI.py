@@ -18,6 +18,7 @@ import subprocess
 script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "face_detection", "caller.py"))
 
 idd = "idd"
+process = None
 
 app = FastAPI()
 
@@ -307,25 +308,26 @@ async def get_attendance_by_student_and_lecture(student_id: str, lecture_name: s
 @app.get("/createLecture")
 async def create_lecture(lectureid: str, date: str, lecturerid: str, lecturename: str):
     
-    subprocess.Popen(["python3", script_path, lectureid])
-    try:
-        conn = get_db_connection()
-    except Exception as e:
-        print(f"Database connection error: {e}")
-        raise HTTPException(status_code=500, detail="Veritabanı bağlantı hatası")
-    
-    try:
-        with conn.cursor() as cursor:
-            query = sql.SQL("INSERT INTO lecture (lectureid, date, lecturerid, lecturename) VALUES (%s, %s, %s, %s)")
-            cursor.execute(query, (lectureid, date, lecturerid, lecturename))
-            conn.commit()
+    if process is None:
+        process = subprocess.Popen(["python3", script_path, lectureid])
+        try:
+            conn = get_db_connection()
+        except Exception as e:
+            print(f"Database connection error: {e}")
+            raise HTTPException(status_code=500, detail="Veritabanı bağlantı hatası")
         
-        return {"status": "success", "message": "Ders oluşturuldu"}
-    except Exception as e:
-        print(f"Error during lecture creation: {e}")
-        raise HTTPException(status_code=500, detail="Sunucu hatası")
-    finally:
-        conn.close()
+        try:
+            with conn.cursor() as cursor:
+                query = sql.SQL("INSERT INTO lecture (lectureid, date, lecturerid, lecturename) VALUES (%s, %s, %s, %s)")
+                cursor.execute(query, (lectureid, date, lecturerid, lecturename))
+                conn.commit()
+            
+            return {"status": "success", "message": "Ders oluşturuldu"}
+        except Exception as e:
+            print(f"Error during lecture creation: {e}")
+            raise HTTPException(status_code=500, detail="Sunucu hatası")
+        finally:
+            conn.close()
 
 @app.get("/markAttendance")
 async def mark_attendance(studentID: str, lectureID: str):
@@ -349,9 +351,15 @@ async def mark_attendance(studentID: str, lectureID: str):
     finally:
         conn.close()
 
-@app.get("/hello")
-async def hello():
-    return {"message": "Hello, world!"}
+@app.post("/stop-recognition")
+def stop_recognition():
+    global process
+    if process is not None:
+        process.terminate()
+        process = None
+        return {"message": "Face recognition stopped"}
+    else:
+        return {"message": "Face recognition is not running"}
 
 
 ngrok_tunnel = ngrok.connect(8000)

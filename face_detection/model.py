@@ -3,6 +3,18 @@ import numpy as np
 import os
 import time
 import requests
+import signal
+
+running = True
+
+def signal_handler(sig, frame):
+    global running
+    running = False
+    print('Stopping face recognition...')
+
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
+
 
 class FaceRecognizer:
     def __init__(self, lectureID):

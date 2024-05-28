@@ -127,4 +127,15 @@ class Database {
       throw Exception('Failed to load attendance records');
     }
   }
+  void stopFaceRecognition() async {
+  final response = await http.post(
+    Uri.parse('$baseIP/stop-recognition'),
+  );
+
+  if (response.statusCode == 200) {
+    print('Face recognition stopped successfully');
+  } else {
+    print('Failed to stop face recognition');
+  }
+}
 }
