@@ -101,15 +101,15 @@ class Database {
     }
   }
 
-  Future<List<Attendance>> fetchAttendanceByLecturerAndLecture(
+  Future<List<Lecture>> fetchAttendanceByLecturerAndLecture(
       String lecturerID, String lectureName) async {
     final response = await http.get(Uri.parse(
-        '$baseIP/getAttendanceByLecturerAndLecture?lecture_id=$lecturerID&lecture_name=$lectureName'));
+        '$baseIP/getAttendanceByLecturerAndLecture?lecturer_id=$lecturerID&lecture_name=$lectureName'));
 
     if (response.statusCode == 200) {
       final List<dynamic> attendanceJson =
           json.decode(response.body)['attendance'];
-      return attendanceJson.map((json) => Attendance.fromJson(json)).toList();
+      return attendanceJson.map((json) => Lecture.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load attendance records');
     }
