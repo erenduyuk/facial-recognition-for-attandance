@@ -26,7 +26,7 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Yoklama Detayı: ${widget.lectureID}'),
+        title: Text('Lecture Details'),
       ),
       body: FutureBuilder<List<Attendance>>(
         future: _attendanceDetails,

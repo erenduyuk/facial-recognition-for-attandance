@@ -31,7 +31,7 @@ class _PreviousLectureAttendanceState extends State<PreviousLectureAttendance> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.lectureName} Geçmiş Yoklamalar'),
+        title: Text('${widget.lectureName} Lectures'),
       ),
       body: FutureBuilder<List<Lecture>>(
         future: _attendances,

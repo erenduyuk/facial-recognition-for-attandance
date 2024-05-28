@@ -45,7 +45,7 @@ class homePageForLecturer extends StatelessWidget {
                 );
               },
               child: Text(
-                'Yoklama Başlat',
+                'Start Attendance',
                 style: TextStyle(color: Colors.white),
               ),
             ),
@@ -69,7 +69,7 @@ class homePageForLecturer extends StatelessWidget {
                 );
               },
               child: Text(
-                'Geçmiş Yoklamalar',
+                'Previous Attendance',
                 style: TextStyle(color: Colors.white),
               ),
             ),
@@ -91,7 +91,7 @@ class homePageForLecturer extends StatelessWidget {
                 );
               },
               child: Text(
-                'Çıkış Yap',
+                'Log out',
                 style: TextStyle(color: Colors.white),
               ),
             ),

@@ -64,7 +64,7 @@ class _HomePageForStudentState extends State<HomePageForStudent> {
                       Lecturelist lecture = snapshot.data![index];
                       return ListTile(
                         title: Text('Lecture: ${lecture.lectureName}'),
-                        subtitle: Text('StudentID: ${lecture.studentID}'),
+                
                         trailing: Icon(Icons.class_, color: Colors.blue),
                         onTap: () {
                           Navigator.push(

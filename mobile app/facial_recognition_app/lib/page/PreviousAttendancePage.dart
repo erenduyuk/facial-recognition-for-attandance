@@ -29,7 +29,7 @@ class _PreviousAttendancePageState extends State<PreviousAttendancePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Eski Yoklamalar'),
+        title: Text('Lectures'),
       ),
       body: FutureBuilder<List<Lecture>>(
         future: _lectures,
