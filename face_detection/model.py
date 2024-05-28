@@ -26,12 +26,15 @@ class FaceRecognizer:
             label, confidence = self.model.predict(roi)
             if confidence < 50:
                 label_text = f"Person {label}"  # Assuming each label corresponds to a person
-                if label == 1:
-                    self.count_ufuk += 1
-                    label_text += ": Ufuk"
-                else:
+                if label == 0:
+                    self.count_eren += 1
+                    label_text += ": Eren"
+                elif label == 1:
                     self.count_tolga += 1
                     label_text += ": Tolga"
+                elif label == 2:
+                    self.count_ufuk += 1
+                    label_text += ": Ufuk"
                 cv2.putText(img, label_text, (x, y-20), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                 cv2.putText(img, f"Confidence: {round(confidence, 2)}", (x, y-50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                 self.confidences.append(confidence)
@@ -63,16 +66,23 @@ class FaceRecognizer:
                 start_time = time.time()
                 print(f"Avg confidence: {sum(self.confidences)/len(self.confidences)}")
                 print(f"Max confidence: {max(self.confidences)}")
-                if self.count_tolga > self.count_ufuk:
+                ugtt = self.count_ufuk > self.count_tolga
+                egtu = self.count_eren > self.count_ufuk
+                tgte = self.count_tolga > self.count_eren
+                if tgte and (not ugtt):
                     mark_attendance("o1", self.lectureID)
                     print("Sen Tolga'sın")
-                else:
+                elif tgte and ugtt:
                     mark_attendance("o2", self.lectureID)
                     print("Sen Ufuk'sun")
+                elif egtu and (not tgte):
+                    mark_attendance("o3", self.lectureID)
+                    print("Sen Eren'sin")
                 self.confidences = []  # Reset confidence list for next interval
                 self.count_tolga = 0  # Reset counters for next interval
                 self.count_ufuk = 0
-
+                self.count_eren = 0
+ 
         
     
 
@@ -83,7 +93,7 @@ class FaceRecognizer:
 
 
 def mark_attendance(studentID, lectureID):
-    url = "https://6c10-31-223-86-134.ngrok-free.app/markAttendance"
+    url = "https://2705-193-255-169-24.ngrok-free.app/markAttendance"
     params = {
         "studentID": studentID,
         "lectureID": lectureID
