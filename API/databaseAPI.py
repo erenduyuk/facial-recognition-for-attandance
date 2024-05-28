@@ -149,6 +149,60 @@ async def stop_recognition():
     # Bu örnekte sadece başarılı bir dönüş sağlanıyor
     return {"status": "success", "message": "Yüz tanıma durduruldu"}
 
+#PreviousAttendance page için
+# @app.get("/getAttendanceByLecture/{lecture_id}")
+# async def get_attendance_by_lecture(lecture_id: str):
+#     try:
+#         conn = get_db_connection()
+#     except Exception as e:
+#         print(f"Database connection error: {e}")
+#         raise HTTPException(status_code=500, detail="Veritabanı bağlantı hatası")
+
+#     try:
+#         with conn.cursor() as cursor:
+#             query = sql.SQL("""
+#                 SELECT studentid, time, ishere
+#                 FROM attendance
+#                 WHERE lectureid = %s
+#             """)
+#             cursor.execute(query, (lecture_id,))
+#             attendance_records = cursor.fetchall()
+
+#         if attendance_records:
+#             return {"status": "success", "attendance": attendance_records}
+#         else:
+#             return {"status": "fail", "message": "Yoklamalar bulunamadı"}
+#     except Exception as e:
+#         print(f"Error during attendance retrieval: {e}")
+#         raise HTTPException(status_code=500, detail="Sunucu hatası")
+#     finally:
+#         conn.close()
+
+#PreviousLectureAttendance page için
+@app.get("/getAttendanceByLecturerAndLecture/")
+async def get_attendance_by_lecturer_and_lecture(lecturer_id: str, lecture_name: str):
+    try:
+        conn = get_db_connection()
+    except Exception as e:
+        print(f"Database connection error: {e}")
+        raise HTTPException(status_code=500, detail="Veritabanı bağlantı hatası")
+    
+    try:
+        with conn.cursor() as cursor:
+            query = sql.SQL("SELECT * FROM lecture WHERE lecturerid = %s AND lecturename = %s")
+            cursor.execute(query, (lecturer_id, lecture_name))
+            attendance_records = cursor.fetchall()
+        
+        if attendance_records:
+            return {"status": "success", "attendance": attendance_records}
+        else:
+            return {"status": "fail", "message": "Yoklamalar bulunamadı"}
+    except Exception as e:
+        print(f"Error during attendance retrieval: {e}")
+        raise HTTPException(status_code=500, detail="Sunucu hatası")
+    finally:
+        conn.close()
+
 @app.get("/getAttendances/{student_id}")
 async def get_attendances(student_id: str):
     try:

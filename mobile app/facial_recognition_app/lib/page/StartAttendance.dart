@@ -6,6 +6,7 @@ import 'package:facial_recognition_app/model/Attendance.dart';
 import 'package:facial_recognition_app/DatabaseManager.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
+import '../base_ip.dart';
 
 class StartAttendancePage extends StatefulWidget {
   final String lecturerId;
@@ -16,8 +17,10 @@ class StartAttendancePage extends StatefulWidget {
   _StartAttendancePageState createState() => _StartAttendancePageState();
 }
 
+BaseIp baseIp = new BaseIp();
+String baseIP = baseIp.base_ip;
+
 class _StartAttendancePageState extends State<StartAttendancePage> {
-  String baseIP = "https://6dc9-95-70-206-22.ngrok-free.app";
   late Timer _timer;
   int _secondsRemaining = 30 * 60; // 30 minutes in seconds
   late Future<List<Attendance>> _attendanceDetails;
@@ -44,7 +47,8 @@ class _StartAttendancePageState extends State<StartAttendancePage> {
         print('Fetched data: $data'); // Debugging line
         if (data['status'] == 'success') {
           final List<String> lectures = List<String>.from(
-            data['lectures'].map((lecture) => lecture[2]), // Adjusted to handle list of lists
+            data['lectures'].map(
+                (lecture) => lecture[2]), // Adjusted to handle list of lists
           );
           setState(() {
             _lectures = lectures;
@@ -74,7 +78,8 @@ class _StartAttendancePageState extends State<StartAttendancePage> {
   Future<void> _fetchAttendanceForSelectedLecture() async {
     if (_selectedLecture != null) {
       try {
-        final attendance = await Database().fetchAttendanceForLecture(uuid.toString());
+        final attendance =
+            await Database().fetchAttendanceForLecture(uuid.toString());
         setState(() {
           _attendanceDetails = Future.value(attendance);
           print('Fetched attendance: $attendance'); // Debugging line
@@ -109,105 +114,110 @@ class _StartAttendancePageState extends State<StartAttendancePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-  appBar: AppBar(
-    title: Text('Attendance Page'),
-  ),
-  body: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                'Remaining Time: ${_formatDuration(_secondsRemaining)}',
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-            IconButton(
-              onPressed: _fetchAttendanceForSelectedLecture,
-              icon: Icon(Icons.refresh),
-            ),
-          ],
-        ),
+      appBar: AppBar(
+        title: Text('Attendance Page'),
       ),
-      Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: DropdownButton<String>(
-          value: _selectedLecture,
-          hint: Text('Select Lecture'),
-          items: _lectures.map((String lecture) {
-            return DropdownMenuItem<String>(
-              value: lecture,
-              child: Text(lecture),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            setState(() {
-              _selectedLecture = newValue;
-              _fetchAttendanceForSelectedLecture();
-            });
-          },
-        ),
-      ),
-      Expanded(
-        child: FutureBuilder<List<Attendance>>(
-          future: _attendanceDetails,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('Attendance not found'));
-            } else {
-              List<Attendance> attendances = snapshot.data!;
-              return ListView.builder(
-                itemCount: attendances.length,
-                itemBuilder: (context, index) {
-                  Attendance attendance = attendances[index];
-                  return ListTile(
-                    leading: Text(attendance.time),
-                    title: Text('${attendance.studentID} ${attendance.lectureName}'),
-                    trailing: Checkbox(
-                      value: attendance.isAttend,
-                      onChanged: null,
-                    ),
-                  );
-                },
-              );
-            }
-          },
-        ),
-      ),
-      SizedBox(height: 16), // Boşluk ekleyerek butonları biraz yukarı çekiyoruz
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ElevatedButton(
-            onPressed: () {
-              _startTimer();
-              
-              Lecture lecture = Lecture(lectureID: uuid, date: "dateee", lecturerID: widget.lecturerId, lectureName: _selectedLecture!);
-              Database().addNewLectureToAPI(lecture.lectureID, lecture.date, lecture.lecturerID, lecture.lectureName);
-            },
-            child: Text('Start'),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Remaining Time: ${_formatDuration(_secondsRemaining)}',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                IconButton(
+                  onPressed: _fetchAttendanceForSelectedLecture,
+                  icon: Icon(Icons.refresh),
+                ),
+              ],
+            ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              _timer.cancel();
-              // Buraya stop işlemleri eklenebilir
-            },
-            child: Text('Stop'),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: DropdownButton<String>(
+              value: _selectedLecture,
+              hint: Text('Select Lecture'),
+              items: _lectures.map((String lecture) {
+                return DropdownMenuItem<String>(
+                  value: lecture,
+                  child: Text(lecture),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedLecture = newValue;
+                  _fetchAttendanceForSelectedLecture();
+                });
+              },
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder<List<Attendance>>(
+              future: _attendanceDetails,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('Attendance not found'));
+                } else {
+                  List<Attendance> attendances = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: attendances.length,
+                    itemBuilder: (context, index) {
+                      Attendance attendance = attendances[index];
+                      return ListTile(
+                        leading: Text(attendance.time),
+                        title: Text(
+                            '${attendance.studentID} ${attendance.lectureName}'),
+                        trailing: Checkbox(
+                          value: attendance.isAttend,
+                          onChanged: null,
+                        ),
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+          ),
+          SizedBox(
+              height: 16), // Boşluk ekleyerek butonları biraz yukarı çekiyoruz
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  _startTimer();
+
+                  Lecture lecture = Lecture(
+                      lectureID: uuid,
+                      date: "dateee",
+                      lecturerID: widget.lecturerId,
+                      lectureName: _selectedLecture!);
+                  Database().addNewLectureToAPI(lecture.lectureID, lecture.date,
+                      lecture.lecturerID, lecture.lectureName);
+                },
+                child: Text('Start'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _timer.cancel();
+                  // Buraya stop işlemleri eklenebilir
+                },
+                child: Text('Stop'),
+              ),
+            ],
           ),
         ],
       ),
-    ],
-  ),
-);
-
-
+    );
   }
 
   @override

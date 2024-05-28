@@ -1,7 +1,8 @@
-import 'package:uuid/uuid.dart'; 
+import 'package:uuid/uuid.dart';
 import 'package:facial_recognition_app/model/Student.dart';
 
 class Attendance {
+  final String attendanceid;
   final String studentID;
   final String lectureID;
   final String time;
@@ -9,6 +10,7 @@ class Attendance {
   final String lectureName;
 
   Attendance({
+    required this.attendanceid,
     required this.studentID,
     required this.lectureID,
     required this.time,
@@ -18,6 +20,7 @@ class Attendance {
 
   factory Attendance.fromJson(List<dynamic> json) {
     return Attendance(
+      attendanceid: json[0],
       studentID: json[1],
       lectureID: json[2],
       time: json[3],

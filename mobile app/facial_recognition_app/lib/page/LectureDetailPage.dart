@@ -4,16 +4,16 @@ import 'package:facial_recognition_app/model/Lecture.dart';
 import 'package:facial_recognition_app/DatabaseManager.dart';
 import 'package:facial_recognition_app/model/Student.dart';
 
-class AttendanceDetailPage extends StatefulWidget {
+class LectureDetailPage extends StatefulWidget {
   final String lectureID;
 
-  const AttendanceDetailPage({Key? key, required this.lectureID}) : super(key: key);
+  const LectureDetailPage({Key? key, required this.lectureID}) : super(key: key);
 
   @override
-  _AttendanceDetailPageState createState() => _AttendanceDetailPageState();
+  _LectureDetailPageState createState() => _LectureDetailPageState();
 }
 
-class _AttendanceDetailPageState extends State<AttendanceDetailPage> {
+class _LectureDetailPageState extends State<LectureDetailPage> {
   late Future<List<Attendance>> _attendanceDetails;
 
   @override
@@ -26,7 +26,7 @@ class _AttendanceDetailPageState extends State<AttendanceDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Attendance Details'),
+        title: Text('Lecture Details'),
       ),
       body: FutureBuilder<List<Attendance>>(
         future: _attendanceDetails,

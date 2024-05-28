@@ -12,14 +12,16 @@ Labels = []
 
 # Iterate through each folder (person) in the dataset
 for label, person_folder in enumerate(os.listdir(dataset_path)):
+    if person_folder.startswith("."):
+        continue
+    print(f"Processing {person_folder} and its label is {label}")
     for image_file in os.listdir(os.path.join(dataset_path, person_folder)):
         # Load the image
         image_path = os.path.join(dataset_path, person_folder, image_file)
         image = Image.open(image_path).convert("L")  # Convert the image to grayscale
-        image = image.resize((600, 600))
+        image = image.resize((800, 800))
         # Append the image to training data and its corresponding label
         #image = cv2.resize(image, (600, 600))
-        print(label)
         Training_Data.append(np.asarray(image, dtype=np.uint8))
         Labels.append(label)
 
