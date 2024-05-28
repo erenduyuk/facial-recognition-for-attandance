@@ -19,7 +19,7 @@ while(True):
     if cv2.waitKey(100) & 0xFF == ord('q'):
         break
         # break if the sample number is morethan 20
-    elif sampleNum>=800:
+    elif sampleNum>=500:
         break
 
 cam.release()
