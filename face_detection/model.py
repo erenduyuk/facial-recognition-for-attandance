@@ -19,19 +19,22 @@ class FaceRecognizer:
 
     def face_detector(self, img, size=0.75):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = self.face_classifier.detectMultiScale(gray, 1.2, 5)
+        faces = self.face_classifier.detectMultiScale(gray, 1.5, 5)
         for (x, y, w, h) in faces:
             roi = gray[y:y+h, x:x+w]
-            roi = cv2.resize(roi, (600, 600))
+            roi = cv2.resize(roi, (800, 800))
             label, confidence = self.model.predict(roi)
             if confidence < 50:
                 label_text = f"Person {label}"  # Assuming each label corresponds to a person
                 if label == 1:
                     self.count_ufuk += 1
                     label_text += ": Ufuk"
-                else:
+                elif label == 2:
                     self.count_tolga += 1
                     label_text += ": Tolga"
+                elif label == 3:
+                    self.count_eren += 1
+                    label_text += ": Eren"
                 cv2.putText(img, label_text, (x, y-20), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                 cv2.putText(img, f"Confidence: {round(confidence, 2)}", (x, y-50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                 self.confidences.append(confidence)
@@ -63,16 +66,23 @@ class FaceRecognizer:
                 start_time = time.time()
                 print(f"Avg confidence: {sum(self.confidences)/len(self.confidences)}")
                 print(f"Max confidence: {max(self.confidences)}")
-                if self.count_tolga > self.count_ufuk:
+                ugtt = self.count_ufuk > self.count_tolga
+                egtu = self.count_eren > self.count_ufuk
+                tgte = self.count_tolga > self.count_eren
+                if tgte and (not ugtt):
                     mark_attendance("o1", self.lectureID)
                     print("Sen Tolga'sın")
-                else:
+                elif tgte and ugtt:
                     mark_attendance("o2", self.lectureID)
                     print("Sen Ufuk'sun")
+                elif egtu and (not tgte):
+                    mark_attendance("o3", self.lectureID)
+                    print("Sen Eren'sin")
                 self.confidences = []  # Reset confidence list for next interval
                 self.count_tolga = 0  # Reset counters for next interval
                 self.count_ufuk = 0
-
+                self.count_eren = 0
+ 
         
     
 
@@ -83,7 +93,9 @@ class FaceRecognizer:
 
 
 def mark_attendance(studentID, lectureID):
+
     url = "https://a183-193-255-169-34.ngrok-free.app/markAttendance"
+
     params = {
         "studentID": studentID,
         "lectureID": lectureID
