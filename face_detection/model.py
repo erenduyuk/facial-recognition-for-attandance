@@ -83,13 +83,13 @@ class FaceRecognizer:
                 egtu = self.count_eren > self.count_ufuk
                 tgte = self.count_tolga > self.count_eren
                 if tgte and (not ugtt):
-                    mark_attendance("o1", self.lectureID)
+                    mark_attendance("o150120001", self.lectureID)
                     print("Sen Tolga'sın")
                 elif tgte and ugtt:
-                    mark_attendance("o2", self.lectureID)
+                    mark_attendance("o150121071", self.lectureID)
                     print("Sen Ufuk'sun")
                 elif egtu and (not tgte):
-                    mark_attendance("o3", self.lectureID)
+                    mark_attendance("o150120509", self.lectureID)
                     print("Sen Eren'sin")
                 self.confidences = []  # Reset confidence list for next interval
                 self.count_tolga = 0  # Reset counters for next interval
@@ -107,7 +107,7 @@ class FaceRecognizer:
 
 def mark_attendance(studentID, lectureID):
 
-    url = "https://b922-95-70-138-229.ngrok-free.app/markAttendance"
+    url = "https://6a9f-31-223-83-56.ngrok-free.app/markAttendance"
 
     params = {
         "studentID": studentID,

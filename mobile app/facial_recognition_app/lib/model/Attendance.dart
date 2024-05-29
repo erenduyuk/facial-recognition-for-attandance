@@ -28,4 +28,9 @@ class Attendance {
       lectureName: json[5],
     );
   }
+
+  @override
+  String toString() {
+    return 'Attendance{attendanceid: $attendanceid, studentID: $studentID, lectureID: $lectureID, time: $time, isAttend: $isAttend, lectureName: $lectureName}';
+  }
 }

@@ -50,30 +50,28 @@ class homePageForLecturer extends StatelessWidget {
               ),
             ),
           ),
-          Padding(padding: EdgeInsets.only(top: 30.0)),
+          const Padding(padding: EdgeInsets.only(top: 30.0)),
           // İkinci buton
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.47,
-            height: MediaQuery.of(context).size.height * 0.05,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => PreviousAttendancePage(
-                            lecturer: lecturer,
-                          )),
-                );
-              },
-              child: Text(
-                'Previous Attendance',
-                style: TextStyle(color: Colors.white),
-              ),
+
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PreviousAttendancePage(
+                          lecturer: lecturer,
+                        )),
+              );
+            },
+            child: const Text(
+              'Previous Attendance',
+              style: TextStyle(color: Colors.white),
             ),
           ),
+
           Spacer(),
           // Log out butonu
           SizedBox(

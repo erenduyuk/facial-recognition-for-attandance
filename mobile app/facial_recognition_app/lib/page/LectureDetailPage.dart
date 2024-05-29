@@ -7,7 +7,8 @@ import 'package:facial_recognition_app/model/Student.dart';
 class LectureDetailPage extends StatefulWidget {
   final String lectureID;
 
-  const LectureDetailPage({Key? key, required this.lectureID}) : super(key: key);
+  const LectureDetailPage({Key? key, required this.lectureID})
+      : super(key: key);
 
   @override
   _LectureDetailPageState createState() => _LectureDetailPageState();
@@ -44,8 +45,8 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
               itemBuilder: (context, index) {
                 Attendance attendance = attendances[index];
                 return ListTile(
-                  leading: Text(attendance.lectureID),
-                  title: Text(attendance.studentID), // Öğrenci ismi gibi bilgileri almak için Student modeline gerek var
+                  title: Text(attendance
+                      .studentID), // Öğrenci ismi gibi bilgileri almak için Student modeline gerek var
                   trailing: Checkbox(
                     value: attendance.isAttend,
                     onChanged: null, // Checkbox'ı devre dışı bırak

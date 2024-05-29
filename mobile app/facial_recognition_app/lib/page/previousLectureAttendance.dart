@@ -43,10 +43,11 @@ class _PreviousLectureAttendanceState extends State<PreviousLectureAttendance> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No attendances found'));
           } else {
+            final List attendanceList = snapshot.data!.reversed.toList();
             return ListView.builder(
-              itemCount: snapshot.data!.length,
+              itemCount: attendanceList.length,
               itemBuilder: (context, index) {
-                Lecture attendance = snapshot.data![index];
+                Lecture attendance = attendanceList[index];
                 return ListTile(
                   title: Text('Lecture ID: ${attendance.lectureID}'),
                   subtitle: Text('Date: ${attendance.date}'),

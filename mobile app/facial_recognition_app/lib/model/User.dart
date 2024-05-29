@@ -13,7 +13,7 @@ class User {
       required this.userPassword});
 
   Future<String> login() async {
-    BaseIp baseIp = new BaseIp();
+    BaseIp baseIp = BaseIp();
     String baseIP = baseIp.base_ip;
     // API üzerinden giriş işlemini gerçekleştirme
     final response = await http.get(Uri.parse(

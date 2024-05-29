@@ -1,4 +1,4 @@
-import psycopg2
+import psycopg2 
 import asyncio
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel

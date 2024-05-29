@@ -7,6 +7,7 @@ import 'package:facial_recognition_app/DatabaseManager.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 import '../base_ip.dart';
+import 'package:intl/intl.dart';
 
 class StartAttendancePage extends StatefulWidget {
   final String lecturerId;
@@ -81,6 +82,8 @@ class _StartAttendancePageState extends State<StartAttendancePage> {
       try {
         final attendance =
             await Database().fetchAttendanceForLecture(uuid.toString());
+
+        print(attendance); // Debugging line
         setState(() {
           _attendanceDetails = Future.value(attendance);
           print('Fetched attendance: $attendance'); // Debugging line
@@ -115,125 +118,133 @@ class _StartAttendancePageState extends State<StartAttendancePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Attendance Page'),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Remaining Time: ${_formatDuration(_secondsRemaining)}',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                IconButton(
-                  onPressed: _fetchAttendanceForSelectedLecture,
-                  icon: Icon(Icons.refresh),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: DropdownButton<String>(
-              value: _selectedLecture,
-              hint: Text('Select Lecture'),
-              items: _lectures.map((String lecture) {
-                return DropdownMenuItem<String>(
-                  value: lecture,
-                  child: Text(lecture),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedLecture = newValue;
-                  _fetchAttendanceForSelectedLecture();
-                });
-              },
-            ),
-          ),
-          Expanded(
-            child: FutureBuilder<List<Attendance>>(
-              future: _attendanceDetails,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('Attendance not found'));
-                } else {
-                  List<Attendance> attendances = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: attendances.length,
-                    itemBuilder: (context, index) {
-                      Attendance attendance = attendances[index];
-                      return ListTile(
-                        leading: Text(attendance.time),
-                        title: Text(
-                            '${attendance.studentID} ${attendance.lectureName}'),
-                        trailing: Checkbox(
-                          value: attendance.isAttend,
-                          onChanged: null,
-                        ),
-                      );
-                    },
-                  );
-                }
-              },
-            ),
-          ),
-          SizedBox(
-              height: 16), // Boşluk ekleyerek butonları biraz yukarı çekiyoruz
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        appBar: AppBar(
+          title: Text('Attendance Page'),
+        ),
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ElevatedButton(
-                onPressed: _isTimerRunning
-                    ? null
-                    : () {
-                        _startTimer();
-                        setState(() {
-                          _isTimerRunning = true;
-                        });
-
-                        Lecture lecture = Lecture(
-                            lectureID: uuid,
-                            date: "dateee",
-                            lecturerID: widget.lecturerId,
-                            lectureName: _selectedLecture!);
-                        Database().addNewLectureToAPI(
-                            lecture.lectureID,
-                            lecture.date,
-                            lecture.lecturerID,
-                            lecture.lectureName);
-                      },
-                child: Text('Start'),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Remaining Time: ${_formatDuration(_secondsRemaining)}',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: _fetchAttendanceForSelectedLecture,
+                      icon: Icon(Icons.refresh),
+                    ),
+                  ],
+                ),
               ),
-              ElevatedButton(
-                onPressed: !_isTimerRunning
-                    ? null
-                    : () {
-                        uuid = Uuid().v4();
-                        _timer.cancel();
-                        _secondsRemaining = 30 * 60;
-                        Database().stopFaceRecognition();
-                        setState(() {
-                          _isTimerRunning = false;
-                        });
-                      },
-                child: Text('Stop'),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: DropdownButton<String>(
+                  value: _selectedLecture,
+                  hint: Text('Select Lecture'),
+                  items: _lectures.map((String lecture) {
+                    return DropdownMenuItem<String>(
+                      value: lecture,
+                      child: Text(lecture),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedLecture = newValue;
+                      _fetchAttendanceForSelectedLecture();
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                child: FutureBuilder<List<Attendance>>(
+                  future: _attendanceDetails,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('Attendance not found'));
+                    } else {
+                      List<Attendance> attendances = snapshot.data!;
+                      return ListView.builder(
+                        itemCount: attendances.length,
+                        itemBuilder: (context, index) {
+                          Attendance attendance = attendances[index];
+                          return ListTile(
+                            leading: Text(attendance.time.substring(0, 8)),
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(attendance.studentID),
+                                Text(attendance.lectureName),
+                              ],
+                            ),
+                            trailing: Checkbox(
+                              value: attendance.isAttend,
+                              onChanged: null,
+                            ),
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
+              SizedBox(
+                  height:
+                      16), // Boşluk ekleyerek butonları biraz yukarı çekiyoruz
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: _isTimerRunning
+                        ? null
+                        : () {
+                            _startTimer();
+                            setState(() {
+                              _isTimerRunning = true;
+                            });
+
+                            Lecture lecture = Lecture(
+                                lectureID: uuid,
+                                date: DateFormat('yyyy-MM-dd HH:mm:ss')
+                                    .format(DateTime.now()),
+                                lecturerID: widget.lecturerId,
+                                lectureName: _selectedLecture!);
+                            Database().addNewLectureToAPI(
+                                lecture.lectureID,
+                                lecture.date,
+                                lecture.lecturerID,
+                                lecture.lectureName);
+                          },
+                    child: Text('Start'),
+                  ),
+                  ElevatedButton(
+                    onPressed: !_isTimerRunning
+                        ? null
+                        : () {
+                            uuid = Uuid().v4();
+                            _timer.cancel();
+                            _secondsRemaining = 30 * 60;
+                            Database().stopFaceRecognition();
+                            setState(() {
+                              _isTimerRunning = false;
+                            });
+                          },
+                    child: Text('Stop'),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 
   @override
